@@ -1,0 +1,34 @@
+@Host = http://localhost:5262
+
+### 1. Iniciar Sesión
+# @name loginAdmin
+POST {{Host}}/api/Auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+### 2. Obtener lista de Empleados
+GET {{Host}}/api/Employees
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+Accept: application/json
+
+### 3. Obtener Empleados por Departamento
+GET {{Host}}/api/Employees/by-department/1
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+Accept: application/json
+
+### 4. Crear un nuevo Empleado (Solo Admin)
+POST {{Host}}/api/Employees
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "name": "Carlos Mendoza",
+  "currentPositionId": 2,
+  "currentPositionName": "Manager",
+  "salary": 4500000,
+  "departmentId": 1
+}
