@@ -48,10 +48,26 @@ namespace CtrlEmp.Infrastructure.Repositories
             return employee;
         }
 
-        public async Task<bool> UpdateAsync(int id, Employee employee)
+        public async Task<bool> UpdateAsync(int id, Employee employee, string positionName)
         {
-            var existing = await _context.Employees.FindAsync(id);
+            var existing = await _context.Employees.Include(e => e.PositionHistories).FirstOrDefaultAsync(e => e.Id == id);
             if (existing == null) return false;
+
+            if (existing.CurrentPositionId != employee.CurrentPositionId)
+            {
+                var now = DateTime.UtcNow;
+
+                foreach (var history in existing.PositionHistories.Where(ph => ph.EndDate == null))
+                {
+                    history.EndDate = now;
+                }
+
+                existing.PositionHistories.Add(new PositionHistory
+                {
+                    Position = positionName,
+                    StartDate = now
+                });
+            }
 
             existing.Name = employee.Name;
             existing.CurrentPositionId = employee.CurrentPositionId;

@@ -16,7 +16,8 @@ namespace CtrlEmp.Core.DTOs
         string Name,
         int CurrentPositionId,
         decimal Salary,
-        int DepartmentId
+        int DepartmentId,
+        string CurrentPositionName
     );
 
     public record EmployeeResponseDto(

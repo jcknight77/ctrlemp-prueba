@@ -85,7 +85,7 @@ namespace CtrlEmp.Api.Controllers
                 DepartmentId = dto.DepartmentId
             };
 
-            var updated = await _repository.UpdateAsync(id, employee);
+            var updated = await _repository.UpdateAsync(id, employee, dto.CurrentPositionName);
             if (!updated) return NotFound(new { message = "Empleado no encontrado" });
 
             return NoContent();

@@ -10,7 +10,7 @@ namespace CtrlEmp.Core.Interfaces
         Task<IEnumerable<Employee>> GetAllAsync();
         Task<Employee?> GetByIdAsync(int id);
         Task<Employee> CreateAsync(Employee employee, string positionName);
-        Task<bool> UpdateAsync(int id, Employee employee);
+        Task<bool> UpdateAsync(int id, Employee employee, string positionName);
         Task<bool> DeleteAsync(int id);
         Task<IEnumerable<Employee>> GetByDepartmentAndProjectsAsync(int departmentId);
     }
