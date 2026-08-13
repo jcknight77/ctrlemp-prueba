@@ -15,15 +15,16 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { employeeService } from '../../services/employeeService';
 import { DEPARTMENT_CHOICES, POSITION_CHOICES } from '../../constants';
 import type { Employee } from '../../types';
+import { useSnackbar } from '../../hooks/useSnackbar';
 
 export const EmployeeEditCustom = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const { showSnackbar } = useSnackbar();
 
     const [formData, setFormData] = useState<Employee | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [submitting, setSubmitting] = useState<boolean>(false);
-    const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
     useEffect(() => {
         if (id) {
@@ -32,7 +33,7 @@ export const EmployeeEditCustom = () => {
                     setFormData(data);
                 })
                 .catch(err => {
-                    setErrorMsg(err.message || 'Error al obtener la información del empleado');
+                  showSnackbar(err.message || 'Error al obtener la información del empleado', 'error');
                 })
                 .finally(() => {
                     setLoading(false);
@@ -57,23 +58,23 @@ export const EmployeeEditCustom = () => {
         if (!id || !formData) return;
 
         setSubmitting(true);
-        setErrorMsg(null);
 
         try {
-            // Mapear el nombre del cargo actualizado
             const selectedPosition = POSITION_CHOICES.find(p => p.id === formData.currentPositionId);
             const payload: Employee = {
                 ...formData,
                 currentPositionName: selectedPosition ? selectedPosition.name : 'Regular',
             };
 
-            // 🚀 LLAMADA AL SERVICIO DIRECTO (PUT)
             await employeeService.update(Number(id), payload);
-
-            // Redireccionar a la lista tras guardar exitosamente
+            showSnackbar('Empleado actualizado satisfactoriamente', 'success');
             navigate('/employees');
-        } catch (err: any) {
-            setErrorMsg(err.message || 'Error al actualizar el empleado');
+        } catch (err: unknown) {
+          const errorMessage = err instanceof Error 
+              ? err.message 
+              : 'Error al actualizar el empleado';
+
+          showSnackbar(errorMessage, 'error');
         } finally {
             setSubmitting(false);
         }
@@ -90,7 +91,7 @@ export const EmployeeEditCustom = () => {
     if (!formData && !loading) {
         return (
             <Box sx={{ maxWidth: 600, margin: '2rem auto' }}>
-                <Alert severity="error">{errorMsg || 'No se encontró el empleado solicitado.'}</Alert>
+                <Alert severity="error">{'No se encontró el empleado solicitado.'}</Alert>
                 <Button 
                     startIcon={<ArrowBackIcon />} 
                     onClick={() => navigate('/employees')}
@@ -112,8 +113,6 @@ export const EmployeeEditCustom = () => {
                     </Button>
                 </Box>
 
-                {errorMsg && <Alert severity="error" sx={{ mb: 2 }}>{errorMsg}</Alert>}
-
                 {formData && (
                     <form onSubmit={handleSubmit}>
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -131,6 +130,7 @@ export const EmployeeEditCustom = () => {
                                 onChange={handleChange}
                                 required
                                 fullWidth
+                                disabled={submitting}
                             />
 
                             <TextField
@@ -141,6 +141,7 @@ export const EmployeeEditCustom = () => {
                                 onChange={handleChange}
                                 required
                                 fullWidth
+                                disabled={submitting}
                             />
 
                             <TextField
@@ -151,6 +152,7 @@ export const EmployeeEditCustom = () => {
                                 onChange={handleChange}
                                 required
                                 fullWidth
+                                disabled={submitting}
                             >
                                 {POSITION_CHOICES.map(option => (
                                     <MenuItem key={option.id} value={option.id}>
@@ -167,6 +169,7 @@ export const EmployeeEditCustom = () => {
                                 onChange={handleChange}
                                 required
                                 fullWidth
+                                disabled={submitting}
                             >
                                 {DEPARTMENT_CHOICES.map(option => (
                                     <MenuItem key={option.id} value={option.id}>

@@ -1,15 +1,7 @@
 import type { Employee } from "../types";
+import { getAuthHeaders, handleHttpResponse } from "../utils";
 
 const API_URL = import.meta.env.VITE_API_URL;
-
-const getAuthHeaders = (): HeadersInit => {
-    const token = localStorage.getItem('token');
-    return {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-    };
-};
 
 export const employeeService = {
     async getAll(departmentId?: number): Promise<Employee[]> {
@@ -18,13 +10,13 @@ export const employeeService = {
             : `${API_URL}/Employees`;
 
         const response = await fetch(url, { headers: getAuthHeaders() });
-        if (!response.ok) throw new Error('Error al obtener la lista de empleados');
+        await handleHttpResponse(response, 'Error al obtener la lista de empleados');
         return response.json();
     },
 
     async getById(id: number): Promise<Employee> {
         const response = await fetch(`${API_URL}/Employees/${id}`, { headers: getAuthHeaders() });
-        if (!response.ok) throw new Error('Error al obtener el empleado');
+        await handleHttpResponse(response, 'Error al obtener el empleado');
         return response.json();
     },
 
@@ -34,7 +26,7 @@ export const employeeService = {
             headers: getAuthHeaders(),
             body: JSON.stringify(employee),
         });
-        if (!response.ok) throw new Error('Error al crear el empleado');
+        await handleHttpResponse(response, 'Error al crear el empleado');
         return response.json();
     },
 
@@ -44,7 +36,7 @@ export const employeeService = {
             headers: getAuthHeaders(),
             body: JSON.stringify(employee),
         });
-        if (!response.ok) throw new Error('Error al actualizar el empleado');
+        await handleHttpResponse(response, 'Error al actualizar el empleado');
     },
 
     async delete(id: number): Promise<void> {
@@ -52,6 +44,6 @@ export const employeeService = {
             method: 'DELETE',
             headers: getAuthHeaders(),
         });
-        if (!response.ok) throw new Error('Error al eliminar el empleado');
+        await handleHttpResponse(response, 'Error al eliminar el empleado');
     }
 };

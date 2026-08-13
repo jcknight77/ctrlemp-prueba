@@ -77,8 +77,6 @@ export const EmployeeListCustom = () => {
                             <TableRow 
                                 key={emp.id} 
                                 hover
-                                sx={{ cursor: 'pointer' }}
-                                onClick={() => navigate(`/employees/${emp.id}`)}
                             >
                                 <TableCell>{emp.id}</TableCell>
                                 <TableCell>{emp.name}</TableCell>
