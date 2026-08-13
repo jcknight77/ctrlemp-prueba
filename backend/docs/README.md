@@ -19,7 +19,7 @@
             return Ok(response);
         }```
 - Esquema de Base de Datos:
-	- ![[database_scheme.png]]
+	- ![Esquema de Base de Datos](./database_scheme.png)
 - Consulta LINQ:
 		```var employees = await _context.Employees
 			.Where(e => e.DepartmentId == departmentId && e.Projects.Any())
